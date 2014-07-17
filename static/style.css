@@ -1,0 +1,31 @@
+em {
+    font-size: 15em;
+    position: absolute;
+    left: 50%;
+    top: 25%;
+}
+
+.empty {
+    background-color: lightgreen;
+}
+
+.occupied {
+    background-color: lightpink;
+}
+
+.men {
+    position: absolute;    
+    left: 0;
+    top: 0;
+    width: 50%;
+    height: 100%;
+}
+
+.women {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 50%;
+    height: 100%;
+}
+

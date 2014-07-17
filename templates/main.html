@@ -1,10 +1,16 @@
-<DOCTYPE html>
+<!-- DOCTYPE html -->
 <html>
 <head>
-<title>{{ title }}</title>
+    <title>{{ title }}</title>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="static/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <h1>Is it open?</h1>
-    <h2>{{ toilet_1 }}</h2>
+    <div class="men {% if toilet_1 == true %}occupied{% else %}empty{% endif %}">
+        <em class="fa fa-male"></em>
+    </div>
+    <div class="women {% if toilet_2 == true %}occupied{% else %}empty{% endif %}">
+        <em class="fa fa-female"></em>
+    </div>
 </body>
 </html>
