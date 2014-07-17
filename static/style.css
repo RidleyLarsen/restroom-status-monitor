@@ -1,8 +1,12 @@
 em {
     font-size: 15em;
-    position: absolute;
-    left: 50%;
-    top: 25%;
+    position: relative;
+    top: 100px;
+}
+
+p {
+    width: 100%;
+    text-align: center;
 }
 
 .empty {
@@ -29,3 +33,6 @@ em {
     height: 100%;
 }
 
+@media only screen and (max-width: 768px) {
+    
+}

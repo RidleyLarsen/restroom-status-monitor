@@ -11,7 +11,9 @@ def hello():
     templateData = {}
     templateData['title'] = "PoopMaster 9000"
     GPIO.setup(4, GPIO.IN)
-    templateData['toilet_1'] = GPIO.input(4)
+    templateData['toilet_1'] = not (GPIO.input(4))
+    GPIO.setup(17, GPIO.IN)
+    templateData['toilet_2'] = not (GPIO.input(17))
     return render_template('main.html', **templateData)
 
 if __name__ == '__main__':
