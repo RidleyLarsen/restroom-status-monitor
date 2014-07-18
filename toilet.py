@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 
 import RPi.GPIO as GPIO
 
@@ -11,10 +11,19 @@ def hello():
     templateData = {}
     templateData['title'] = "PoopMaster 9000"
     GPIO.setup(4, GPIO.IN)
-    templateData['toilet_1'] = not (GPIO.input(4))
-    GPIO.setup(17, GPIO.IN)
-    templateData['toilet_2'] = not (GPIO.input(17))
+    templateData['toilet_2'] = not (GPIO.input(4))
+    GPIO.setup(22, GPIO.IN)
+    templateData['toilet_1'] = not (GPIO.input(22))
     return render_template('main.html', **templateData)
+
+@app.route('/status')
+def get_status():
+    dic = {}
+    GPIO.setup(4, GPIO.IN)
+    GPIO.setup(27, GPIO.IN)
+    dic['toilet_2'] = not (GPIO.input(4))
+    dic['toilet_1'] = not (GPIO.input(27))
+    return jsonify(**dic)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
