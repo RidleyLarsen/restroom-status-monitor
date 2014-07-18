@@ -18,5 +18,70 @@
           <em class="fa fa-female"></em>
       </p>
     </div>
+    <script type="text/javascript">
+      function el_has_class(el, className) {
+        if (el.classList)
+          el.classList.contains(className);
+        else
+          new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+      }
+      function remove_class_from_el(el, className) {
+        if (el.classList)
+          el.classList.remove(className);
+        else
+          el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+      }
+      function add_class_to_el(el, className) {
+        if (el.classList)
+          el.classList.add(className);
+        else
+          el.className += ' ' + className;
+      }
+      setInterval(function () {
+        request = new XMLHttpRequest();
+        request.open('GET', '/status', true);
+
+        request.onload = function() {
+          if (request.status >= 200 && request.status < 400){
+            // Success!
+            data = JSON.parse(request.responseText);
+            men = document.getElementsByClassName('men')[0];
+            women = document.getElementsByClassName('women')[0];
+            if (data.toilet_1 === true) {
+              if (el_has_class(men, 'empty')) {
+                remove_class_from_el(men, 'empty');
+                add_class_to_el(men, 'occupied');
+              }
+            }
+            else {
+              if (el_has_class(men, 'occupied')) {
+                remove_class_from_el(men, 'occupied');
+                add_class_to_el(men, 'empty');
+              }
+            }
+            if (data.toilet_2 === true) {
+              if (el_has_class(women, 'empty')) {
+                remove_class_from_el(women, 'empty');
+                add_class_to_el(women, 'occupied');
+              }
+            }
+            else {
+              if (el_has_class(women, 'occupied')) {
+                remove_class_from_el(women, 'occupied');
+                add_class_to_el(women, 'empty');
+              }
+            }
+          } else {
+            // We reached our target server, but it returned an error
+
+          }
+        };
+        request.onerror = function() {
+          // There was a connection error of some sort
+        };
+
+        request.send();
+      }, 4000);
+    </script>
 </body>
 </html>
