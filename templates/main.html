@@ -20,10 +20,7 @@
     </div>
     <script type="text/javascript">
       function el_has_class(el, className) {
-        if (el.classList)
-          el.classList.contains(className);
-        else
-          new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+        return el.classList.contains(className);
       }
       function remove_class_from_el(el, className) {
         if (el.classList)
