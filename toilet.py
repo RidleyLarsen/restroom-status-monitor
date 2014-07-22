@@ -6,23 +6,25 @@ app = Flask(__name__)
 
 GPIO.setmode(GPIO.BCM)
 
+
 @app.route('/')
 def hello():
     templateData = {}
-    templateData['title'] = "PoopMaster 9000"
+    templateData['title'] = "ToiletPi"
     GPIO.setup(4, GPIO.IN)
-    templateData['toilet_2'] = not (GPIO.input(4))
+    templateData['womens_occupied'] = not (GPIO.input(4))
     GPIO.setup(22, GPIO.IN)
-    templateData['toilet_1'] = not (GPIO.input(22))
+    templateData['mens_occupied'] = not (GPIO.input(22))
     return render_template('main.html', **templateData)
+
 
 @app.route('/status')
 def get_status():
     dic = {}
     GPIO.setup(4, GPIO.IN)
-    GPIO.setup(27, GPIO.IN)
-    dic['toilet_2'] = not (GPIO.input(4))
-    dic['toilet_1'] = not (GPIO.input(27))
+    GPIO.setup(22, GPIO.IN)
+    dic['womens_occupied'] = not (GPIO.input(4))
+    dic['mens_occupied'] = not (GPIO.input(22))
     return jsonify(**dic)
 
 if __name__ == '__main__':

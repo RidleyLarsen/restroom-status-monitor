@@ -6,14 +6,36 @@
     <title>{{ title }}</title>
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="static/style.css" rel="stylesheet" type="text/css">
+    <script>
+      /*!
+       * Dynamically changing favicons with JavaScript
+       * Works in all A-grade browsers except Safari and Internet Explorer
+       * Demo: http://mathiasbynens.be/demo/dynamic-favicons
+       */
+
+      // HTML5™, baby! http://mathiasbynens.be/notes/document-head
+      document.head || (document.head = document.getElementsByTagName('head')[0]);
+
+      function changeFavicon(src) {
+       var link = document.createElement('link'),
+           oldLink = document.getElementById('dynamic-favicon');
+       link.id = 'dynamic-favicon';
+       link.rel = 'shortcut icon';
+       link.href = src;
+       if (oldLink) {
+        document.head.removeChild(oldLink);
+       }
+       document.head.appendChild(link);
+      }
+    </script>
 </head>
 <body>
-    <div class="men {% if toilet_1 == true %}occupied{% else %}empty{% endif %}">
+    <div class="men {% if mens_occupied == true %}occupied{% else %}empty{% endif %}">
       <p>
         <em class="fa fa-male"></em>
       </p>
     </div>
-    <div class="women {% if toilet_2 == true %}occupied{% else %}empty{% endif %}">
+    <div class="women {% if womens_occupied == true %}occupied{% else %}empty{% endif %}">
       <p>
           <em class="fa fa-female"></em>
       </p>
@@ -34,7 +56,7 @@
         else
           el.className += ' ' + className;
       }
-      setInterval(function () {
+      function update_status() {
         request = new XMLHttpRequest();
         request.open('GET', '/status', true);
 
@@ -44,7 +66,24 @@
             data = JSON.parse(request.responseText);
             men = document.getElementsByClassName('men')[0];
             women = document.getElementsByClassName('women')[0];
-            if (data.toilet_1 === true) {
+            if (data.mens_occupied === true) {
+              if (data.womens_occupied === true) {
+                src = "/static/both_occupied.png";
+              }
+              else {
+                src = "/static/men_occupied_women_empty.png";
+              }
+            }
+            else {
+              if (data.womens_occupied === true) {
+                src = "/static/women_occupied_men_empty.png";
+              }
+              else {
+                src="/static/both_empty.png";
+              }
+            }
+            changeFavicon(src);
+            if (data.mens_occupied === true) {
               if (el_has_class(men, 'empty')) {
                 remove_class_from_el(men, 'empty');
                 add_class_to_el(men, 'occupied');
@@ -56,7 +95,7 @@
                 add_class_to_el(men, 'empty');
               }
             }
-            if (data.toilet_2 === true) {
+            if (data.womens_occupied === true) {
               if (el_has_class(women, 'empty')) {
                 remove_class_from_el(women, 'empty');
                 add_class_to_el(women, 'occupied');
@@ -78,6 +117,9 @@
         };
 
         request.send();
+      }
+      setInterval(function () {
+        update_status();
       }, 4000);
     </script>
 </body>
