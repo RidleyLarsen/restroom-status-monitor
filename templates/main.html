@@ -56,6 +56,11 @@
         else
           el.className += ' ' + className;
       }
+      function update_status_after_delay() {
+        setTimeout(function () {
+          update_status();
+        }, 3000);
+      }
       function update_status() {
         request = new XMLHttpRequest();
         request.open('GET', '/status', true);
@@ -111,16 +116,16 @@
             // We reached our target server, but it returned an error
 
           }
+          update_status_after_delay();
         };
         request.onerror = function() {
           // There was a connection error of some sort
+          update_status_after_delay();
         };
 
         request.send();
       }
-      setInterval(function () {
-        update_status();
-      }, 3000);
+      update_status_after_delay();
     </script>
 </body>
 </html>
