@@ -57,70 +57,72 @@
           el.className += ' ' + className;
       }
       function update_status() {
-        request = new XMLHttpRequest();
-        request.open('GET', '/status', true);
+        setTimeout(function () {
+          request = new XMLHttpRequest();
+          request.open('GET', '/status', true);
 
-        request.onload = function() {
-          if (request.status >= 200 && request.status < 400){
-            // Success!
-            data = JSON.parse(request.responseText);
-            men = document.getElementsByClassName('men')[0];
-            women = document.getElementsByClassName('women')[0];
-            if (data.mens_occupied === true) {
-              if (data.womens_occupied === true) {
-                src = "/static/both_occupied.png";
+          request.onload = function() {
+            if (request.status >= 200 && request.status < 400){
+              // Success!
+              data = JSON.parse(request.responseText);
+              men = document.getElementsByClassName('men')[0];
+              women = document.getElementsByClassName('women')[0];
+              if (data.mens_occupied === true) {
+                if (data.womens_occupied === true) {
+                  src = "/static/both_occupied.png";
+                }
+                else {
+                  src = "/static/men_occupied_women_empty.png";
+                }
               }
               else {
-                src = "/static/men_occupied_women_empty.png";
+                if (data.womens_occupied === true) {
+                  src = "/static/women_occupied_men_empty.png";
+                }
+                else {
+                  src="/static/both_empty.png";
+                }
               }
-            }
-            else {
-              if (data.womens_occupied === true) {
-                src = "/static/women_occupied_men_empty.png";
+              changeFavicon(src);
+              if (data.mens_occupied === true) {
+                if (el_has_class(men, 'empty')) {
+                  remove_class_from_el(men, 'empty');
+                  add_class_to_el(men, 'occupied');
+                }
               }
               else {
-                src="/static/both_empty.png";
+                if (el_has_class(men, 'occupied')) {
+                  remove_class_from_el(men, 'occupied');
+                  add_class_to_el(men, 'empty');
+                }
               }
-            }
-            changeFavicon(src);
-            if (data.mens_occupied === true) {
-              if (el_has_class(men, 'empty')) {
-                remove_class_from_el(men, 'empty');
-                add_class_to_el(men, 'occupied');
+              if (data.womens_occupied === true) {
+                if (el_has_class(women, 'empty')) {
+                  remove_class_from_el(women, 'empty');
+                  add_class_to_el(women, 'occupied');
+                }
               }
-            }
-            else {
-              if (el_has_class(men, 'occupied')) {
-                remove_class_from_el(men, 'occupied');
-                add_class_to_el(men, 'empty');
+              else {
+                if (el_has_class(women, 'occupied')) {
+                  remove_class_from_el(women, 'occupied');
+                  add_class_to_el(women, 'empty');
+                }
               }
-            }
-            if (data.womens_occupied === true) {
-              if (el_has_class(women, 'empty')) {
-                remove_class_from_el(women, 'empty');
-                add_class_to_el(women, 'occupied');
-              }
-            }
-            else {
-              if (el_has_class(women, 'occupied')) {
-                remove_class_from_el(women, 'occupied');
-                add_class_to_el(women, 'empty');
-              }
-            }
-          } else {
-            // We reached our target server, but it returned an error
+            } else {
+              // We reached our target server, but it returned an error
 
-          }
-        };
-        request.onerror = function() {
-          // There was a connection error of some sort
-        };
+            }
+            update_status();
+          };
+          request.onerror = function() {
+            // There was a connection error of some sort
+            update_status();
+          };
 
-        request.send();
+          request.send();
+        }, 3000);
       }
-      setInterval(function () {
-        update_status();
-      }, 3000);
+      update_status();
     </script>
 </body>
 </html>
