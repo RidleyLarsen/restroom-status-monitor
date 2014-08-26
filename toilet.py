@@ -9,12 +9,29 @@ GPIO.setmode(GPIO.BCM)
 
 @app.route('/')
 def hello():
-    templateData = {}
-    templateData['title'] = "ToiletPi"
     GPIO.setup(4, GPIO.IN)
-    templateData['womens_occupied'] = not (GPIO.input(4))
+    womens_occupied = not (GPIO.input(4))
     GPIO.setup(22, GPIO.IN)
-    templateData['mens_occupied'] = not (GPIO.input(22))
+    mens_occupied = not (GPIO.input(22))
+
+    if mens_occupied:
+        if womens_occupied:
+            favicon = 'both_occupied'
+        else:
+            favicon = 'men_occupied_women_empty'
+    else:
+        if womens_occupied:
+            favicon = 'women_occupied_men_empty'
+        else:
+            favicon = 'both_empty'
+
+    templateData = {
+        'favicon': favicon,
+        'title': 'ToiletPi',
+        'womens_occupied': womens_occupied,
+        'mens_occupied': mens_occupied,
+    }
+
     return render_template('main.html', **templateData)
 
 
