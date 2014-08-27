@@ -31,6 +31,12 @@
     </script>
 </head>
 <body>
+    <div class="ajax-status">
+      <span class="ajax-last-updated">
+        <noscript>Enable JavaScript to get automatic updates.</noscript>
+      </span>
+      <span class="ajax-updating-or-error"></span>
+    </div>
     <div class="men {% if mens_occupied == true %}occupied{% else %}empty{% endif %}">
       <p>
         <em class="fa fa-male"></em>
@@ -57,8 +63,17 @@
         else
           el.className += ' ' + className;
       }
+      function update_last_updated_time() {
+        document.querySelector('.ajax-last-updated').innerHTML =
+          'Last updated at ' + new Date().toLocaleTimeString();
+      }
       function update_status() {
+        var delay_in_seconds = 3;
+
         setTimeout(function () {
+          document.querySelector('.ajax-updating-or-error').innerHTML =
+            'Updating...';
+
           request = new XMLHttpRequest();
           request.open('GET', '/status', true);
 
@@ -109,20 +124,33 @@
                   add_class_to_el(women, 'empty');
                 }
               }
+
+              document.querySelector('.ajax-updating-or-error').innerHTML = '';
+              update_last_updated_time();
             } else {
               // We reached our target server, but it returned an error
 
+              document.querySelector('.ajax-updating-or-error').innerHTML =
+                'Error (' + request.status + '). Trying again in ' +
+                delay_in_seconds + ' seconds...';
             }
             update_status();
           };
           request.onerror = function() {
             // There was a connection error of some sort
+
+            document.querySelector('.ajax-updating-or-error').innerHTML =
+                'Unknown error. It is most likely a problem with your ' +
+                'connection or the server. Trying again in ' +
+                delay_in_seconds + ' seconds...';
+
             update_status();
           };
 
           request.send();
-        }, 3000);
+        }, delay_in_seconds * 1000);
       }
+      update_last_updated_time();
       update_status();
     </script>
 </body>
