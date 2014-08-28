@@ -18,6 +18,22 @@
       document.head || (document.head = document.getElementsByTagName('head')[0]);
 
       function changeFavicon(src) {
+       if (src == 'error') {
+        // Do not attempt to access an image file on the server since
+        // there is a chance that the server is having a problem and
+        // will not be able to serve it.
+
+        // This is the exclamation mark icon from Freecns Cumulus:
+        // https://dribbble.com/shots/1203583-Freecns-Cumulus
+
+        src =
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9' +
+          'hAAAApklEQVQ4jaXTSwrCQBAE0LcwnkX8nFTwg7rwJH6uYfQS7lRwYUQXZkRiEjRT' +
+          'UKuuKrpnuvlGH2OkOObcYYRuif6NNubI8KhghimSMvO2xljkOve8sawQBpTVFqE4w' +
+          'L1BQBbeZFbTal3AAxM4RATs4BwRcIJLbEDMCCmvDfv1/4scQk/19tV1cEMnCCYNAo' +
+          'YfdQk2f7S+QksBUcf0iXDOe1xzpirO+QlA6LTt9Gq4rQAAAABJRU5ErkJggg==';
+       }
+
        var link = document.createElement('link'),
            oldLink = document.getElementById('dynamic-favicon');
        link.id = 'dynamic-favicon';
@@ -130,6 +146,8 @@
             } else {
               // We reached our target server, but it returned an error
 
+              changeFavicon('error');
+
               document.querySelector('.ajax-updating-or-error').innerHTML =
                 'Error (' + request.status + '). Trying again in ' +
                 delay_in_seconds + ' seconds...';
@@ -138,6 +156,8 @@
           };
           request.onerror = function() {
             // There was a connection error of some sort
+
+            changeFavicon('error');
 
             document.querySelector('.ajax-updating-or-error').innerHTML =
                 'Unknown error. It is most likely a problem with your ' +
