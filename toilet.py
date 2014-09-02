@@ -21,7 +21,7 @@ def hello():
             favicon = 'men_occupied_women_empty'
     else:
         if womens_occupied:
-            favicon = 'women_occupied_men_empty'
+            favicon = 'men_empty_women_occupied'
         else:
             favicon = 'both_empty'
 
