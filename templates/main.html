@@ -83,12 +83,25 @@
         document.querySelector('.ajax-last-updated').innerHTML =
           'Last updated at ' + new Date().toLocaleTimeString();
       }
+      function after_update_attempt(favicon_src, updating_or_error_text) {
+        clearTimeout(updating_text);
+        clearTimeout(taking_too_long_favicon);
+        changeFavicon(favicon_src);
+        document.querySelector('.ajax-updating-or-error').innerHTML =
+          updating_or_error_text;
+      }
       function update_status() {
         var delay_in_seconds = 3;
 
         setTimeout(function () {
-          document.querySelector('.ajax-updating-or-error').innerHTML =
-            'Updating...';
+          updating_text = setTimeout(function() {
+            document.querySelector('.ajax-updating-or-error').innerHTML =
+              'Updating...';
+          }, 250);
+
+          taking_too_long_favicon = setTimeout(function() {
+            changeFavicon('error');
+          }, 1000);
 
           request = new XMLHttpRequest();
           request.open('GET', '/status', true);
@@ -115,7 +128,6 @@
                   src="/static/both_empty.png";
                 }
               }
-              changeFavicon(src);
               if (data.mens_occupied === true) {
                 if (el_has_class(men, 'empty')) {
                   remove_class_from_el(men, 'empty');
@@ -141,28 +153,28 @@
                 }
               }
 
-              document.querySelector('.ajax-updating-or-error').innerHTML = '';
+              after_update_attempt(src, '');
               update_last_updated_time();
             } else {
               // We reached our target server, but it returned an error
 
-              changeFavicon('error');
-
-              document.querySelector('.ajax-updating-or-error').innerHTML =
+              after_update_attempt(
+                'error',
                 'Error (' + request.status + '). Trying again in ' +
-                delay_in_seconds + ' seconds...';
+                  delay_in_seconds + ' seconds...'
+              );
             }
             update_status();
           };
           request.onerror = function() {
             // There was a connection error of some sort
 
-            changeFavicon('error');
-
-            document.querySelector('.ajax-updating-or-error').innerHTML =
-                'Unknown error. It is most likely a problem with your ' +
+            after_update_attempt(
+              'error',
+              'Unknown error. It is most likely a problem with your ' +
                 'connection or the server. Trying again in ' +
-                delay_in_seconds + ' seconds...';
+                delay_in_seconds + ' seconds...'
+            );
 
             update_status();
           };
