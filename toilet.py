@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify
 
-__version__ = '2.0.0'`
+__version__ = '2.0.0'
 
 DEBUG = True
 DEBUG_MENS = True
