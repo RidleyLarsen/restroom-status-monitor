@@ -1,3 +1,183 @@
+/* .empty, .occupied, and the span rule MUST come first */
+
+.empty {
+    background-color: #90EE90;
+}
+
+.occupied {
+    background-color: #FFB6C1;
+}
+
+.empty p span, .occupied p span {
+    display: none;
+    position: absolute;
+    top: 60px;
+    font-size: 2em;
+    left: 50%;
+    margin-left: -12.5%;
+    width: 25%;
+    white-space: nowrap;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* The following rules are unordered. */
+
+*,
+*:after,
+*::before {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+html,
+body,
+.st-container,
+.st-pusher,
+.st-content {
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.st-content {
+    overflow-y: scroll;
+    background: #f3efe0;
+}
+
+.st-content,
+.st-content-inner {
+    position: relative;
+}
+
+.st-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.st-pusher {
+    position: relative;
+    left: 0;
+    z-index: 99;
+    height: 100%;
+    -webkit-transition: -webkit-transform 0.5s;
+    transition: transform 0.5s;
+}
+
+.st-pusher::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    background: rgba(0,0,0,0.2);
+    content: '';
+    opacity: 0;
+    -webkit-transition: opacity 0.5s, width 0.1s 0.5s, height 0.1s 0.5s;
+    transition: opacity 0.5s, width 0.1s 0.5s, height 0.1s 0.5s;
+}
+
+.st-menu-open .st-pusher::after {
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    -webkit-transition: opacity 0.5s;
+    transition: opacity 0.5s;
+}
+
+.st-menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 100;
+    visibility: hidden;
+    width: 300px;
+    height: 100%;
+    background: #61CDCD;
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+.st-menu::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.2);
+    content: '';
+    opacity: 1;
+    -webkit-transition: opacity 0.5s;
+    transition: opacity 0.5s;
+}
+
+.st-menu-open .st-menu::after {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    -webkit-transition: opacity 0.5s, width 0.1s 0.5s, height 0.1s 0.5s;
+    transition: opacity 0.5s, width 0.1s 0.5s, height 0.1s 0.5s;
+}
+.st-menu ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.st-menu h2 {
+    margin: 0;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    padding-left: 0.5em;
+    color: rgba(0,0,0,0.4);
+    text-shadow: 0 0 1px rgba(0,0,0,0.1);
+    font-weight: 300;
+    font-size: 2em;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.st-menu ul li {
+    display: block;
+    padding: 1em 1em 1em 1.2em;
+    outline: none;
+    box-shadow: inset 0 -1px rgba(0,0,0,0.2);
+    color: #f3efe0;
+    text-shadow: 0 0 1px rgba(255,255,255,0.1);
+    letter-spacing: 1px;
+    font-weight: 400;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-transition: background 0.3s, box-shadow 0.3s;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.st-menu ul li input[type="text"] {
+    width: 100%;
+    border-radius: 15px;
+    padding: 5px;
+    margin-top: 8px;
+    border: 2px solid transparent;
+}
+
+.st-menu ul li:first-child a {
+    box-shadow: inset 0 -1px rgba(0,0,0,0.2), inset 0 1px rgba(0,0,0,0.2);
+}
+
+.st-menu ul li a:hover {
+    background: rgba(0,0,0,0.2);
+    box-shadow: inset 0 -1px rgba(0,0,0,0);
+    color: #fff;
+}
+
+.menu-close.pull-right, #settings-btn {
+    font-size: 1.5em;
+    color: rgba(0, 0, 0, 0.50);
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    padding: 10px;
+    margin: -12px;
+    cursor: pointer;
+}
+
 .ajax-status {
     position: absolute;
     top: 0;
@@ -36,16 +216,8 @@ p {
     text-align: center;
 }
 
-.empty {
-    background-color: lightgreen;
-}
-
-.occupied {
-    background-color: lightpink;
-}
-
 .men {
-    position: absolute;    
+    position: absolute;
     left: 0;
     top: 0;
     width: 50%;
@@ -60,6 +232,27 @@ p {
     height: 100%;
 }
 
-@media only screen and (max-width: 768px) {
-    
+.st-effect.st-menu-open .st-pusher {
+    -webkit-transform: translate3d(-300px, 0, 0);
+    transform: translate3d(-300px, 0, 0);
+}
+
+.st-effect.st-menu {
+    z-index: 1;
+}
+
+.st-effect.st-menu-open .st-effect.st-menu {
+    visibility: visible;
+    -webkit-transition: -webkit-transform 0.5s;
+    transition: transform 0.5s;
+}
+
+.st-effect.st-menu::after {
+    display: none;
+}
+
+@media only screen and (max-width: 400px) {
+    .empty p span, .occupied p span {
+        font-size: 1.5em;
+    }
 }

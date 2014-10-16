@@ -47,143 +47,103 @@
     </script>
 </head>
 <body>
-    <div class="ajax-status">
-      <span class="ajax-last-updated">
-        <noscript>Enable JavaScript to get automatic updates.</noscript>
-      </span>
-      <span class="ajax-updating-or-error"></span>
+  <div class="st-container st-effect">
+    <nav class="st-menu st-effect" id="menu">
+      <h2>Settings</h2>
+      <div id="menu-close-btn" class="pull-right menu-close">
+        <i class="fa fa-times"></i>
+      </div>
+      <ul>
+        <li>Empty Color: <input id="empty_color" class="color" type="text"></li>
+        <li>Occupied Color: <input id="occupied_color" class="color" type="text"></li>
+        <li>
+          <label for="#show-text">Show status text?</label>
+          <input type="checkbox" id="show-text">
+        </li>
+        <li><button id="reset-colors">Reset to Default</button></li>
+      </ul>
+    </nav>
+    <div class="st-pusher">
+      <div class="st-content">
+        <div class="ajax-status">
+          <span class="ajax-last-updated">
+            <noscript>Enable JavaScript to get automatic updates.</noscript>
+          </span>
+          <span class="ajax-updating-or-error"></span>
+          <span class="pull-right" id="settings-btn"><i class="fa fa-cog"></i></span>
+        </div>
+        <div class="men {% if mens_occupied == true %}occupied{% else %}empty{% endif %}">
+          <p>
+            <span>{% if mens_occupied %}In Use{% else %}Open{% endif %}</span>
+            <em class="fa fa-male"></em>
+          </p>
+        </div>
+        <div class="women {% if womens_occupied == true %}occupied{% else %}empty{% endif %}">
+          <p>
+              <span>{% if womens_occupied %}In Use{% else %}Open{% endif %}</span>
+              <em class="fa fa-female"></em>
+          </p>
+        </div>
+      </div>
     </div>
-    <div class="men {% if mens_occupied == true %}occupied{% else %}empty{% endif %}">
-      <p>
-        <em class="fa fa-male"></em>
-      </p>
-    </div>
-    <div class="women {% if womens_occupied == true %}occupied{% else %}empty{% endif %}">
-      <p>
-          <em class="fa fa-female"></em>
-      </p>
-    </div>
-    <script type="text/javascript">
-      function el_has_class(el, className) {
-        return el.classList.contains(className);
+  </div>
+  <script type="text/javascript" src="static/jscolor.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      var empty_default = "90EE90";
+      var occupied_default = "FFB6C1";
+      var rules = document.styleSheets[1].rules || document.styleSheets[1].cssRules;
+      empty_input = document.getElementById('empty_color');
+      occupied_input = document.getElementById('occupied_color');
+      reset_btn = document.getElementById('reset-colors');
+      show_text = document.getElementById('show-text');
+      if (!localStorage.occupied) {
+        localStorage.occupied = occupied_default;
       }
-      function remove_class_from_el(el, className) {
-        if (el.classList)
-          el.classList.remove(className);
-        else
-          el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+      if (!localStorage.empty) {
+        localStorage.empty = empty_default;
       }
-      function add_class_to_el(el, className) {
-        if (el.classList)
-          el.classList.add(className);
-        else
-          el.className += ' ' + className;
+      if (!localStorage.showText) {
+        localStorage.showText = false;
       }
-      function update_last_updated_time() {
-        document.querySelector('.ajax-last-updated').innerHTML =
-          'Last updated at ' + new Date().toLocaleTimeString();
-      }
-      function after_update_attempt(favicon_src, updating_or_error_text) {
-        clearTimeout(updating_text);
-        clearTimeout(taking_too_long_favicon);
-        changeFavicon(favicon_src);
-        document.querySelector('.ajax-updating-or-error').innerHTML =
-          updating_or_error_text;
-      }
-      function update_status() {
-        var delay_in_seconds = 3;
+      show_text.checked = localStorage.showText == "true";
+      text_display = (localStorage.showText == "true" ? 'block' : 'none');
 
-        setTimeout(function () {
-          updating_text = setTimeout(function() {
-            document.querySelector('.ajax-updating-or-error').innerHTML =
-              'Updating...';
-          }, 250);
+      rules[0].style.backgroundColor = localStorage.empty;
+      rules[1].style.backgroundColor = localStorage.occupied;
+      rules[2].style.display = text_display;
 
-          taking_too_long_favicon = setTimeout(function() {
-            changeFavicon('error');
-          }, 1000);
-
-          request = new XMLHttpRequest();
-          request.open('GET', '/status', true);
-
-          request.onload = function() {
-            if (request.status >= 200 && request.status < 400){
-              // Success!
-              data = JSON.parse(request.responseText);
-              men = document.getElementsByClassName('men')[0];
-              women = document.getElementsByClassName('women')[0];
-              if (data.mens_occupied === true) {
-                if (data.womens_occupied === true) {
-                  src = "/static/both_occupied.png";
-                }
-                else {
-                  src = "/static/men_occupied_women_empty.png";
-                }
-              }
-              else {
-                if (data.womens_occupied === true) {
-                  src = "/static/men_empty_women_occupied.png";
-                }
-                else {
-                  src="/static/both_empty.png";
-                }
-              }
-              if (data.mens_occupied === true) {
-                if (el_has_class(men, 'empty')) {
-                  remove_class_from_el(men, 'empty');
-                  add_class_to_el(men, 'occupied');
-                }
-              }
-              else {
-                if (el_has_class(men, 'occupied')) {
-                  remove_class_from_el(men, 'occupied');
-                  add_class_to_el(men, 'empty');
-                }
-              }
-              if (data.womens_occupied === true) {
-                if (el_has_class(women, 'empty')) {
-                  remove_class_from_el(women, 'empty');
-                  add_class_to_el(women, 'occupied');
-                }
-              }
-              else {
-                if (el_has_class(women, 'occupied')) {
-                  remove_class_from_el(women, 'occupied');
-                  add_class_to_el(women, 'empty');
-                }
-              }
-
-              after_update_attempt(src, '');
-              update_last_updated_time();
-            } else {
-              // We reached our target server, but it returned an error
-
-              after_update_attempt(
-                'error',
-                'Error (' + request.status + '). Trying again in ' +
-                  delay_in_seconds + ' seconds...'
-              );
-            }
-            update_status();
-          };
-          request.onerror = function() {
-            // There was a connection error of some sort
-
-            after_update_attempt(
-              'error',
-              'Unknown error. It is most likely a problem with your ' +
-                'connection or the server. Trying again in ' +
-                delay_in_seconds + ' seconds...'
-            );
-
-            update_status();
-          };
-
-          request.send();
-        }, delay_in_seconds * 1000);
-      }
-      update_last_updated_time();
-      update_status();
-    </script>
+      setTimeout(function () {
+        empty_input.color.fromString(localStorage.empty);
+        occupied_input.color.fromString(localStorage.occupied);
+      }, 350);
+      empty_input.addEventListener('change', function () {
+        localStorage.empty = '#' + this.color.toString().toUpperCase();
+        rules[0].style.backgroundColor = localStorage.empty;
+      });
+      occupied_input.addEventListener('change', function () {
+        localStorage.occupied = '#' + this.color.toString().toUpperCase();
+        rules[1].style.backgroundColor = localStorage.occupied;
+      });
+      reset_btn.addEventListener('click', function () {
+        localStorage.empty = empty_default;
+        localStorage.occupied = occupied_default;
+        localStorage.showText = false;
+        text_display = (localStorage.showText == "true" ? 'block' : 'none');
+        rules[0].style.backgroundColor = '#' + localStorage.empty;
+        rules[1].style.backgroundColor = '#' + localStorage.occupied;
+        rules[2].style.display = text_display;
+        empty_input.color.fromString(localStorage.empty);
+        occupied_input.color.fromString(localStorage.occupied);
+        show_text.checked = localStorage.showText == "true";
+      });
+      show_text.addEventListener('click', function () {
+        text_display = (this.checked ? 'block' : 'none');
+        localStorage.showText = this.checked;
+        rules[2].style.display = text_display;
+      });
+    });
+  </script>
+  <script type="text/javascript" src="static/app.js"></script>
 </body>
 </html>

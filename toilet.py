@@ -1,18 +1,28 @@
 from flask import Flask, render_template, jsonify
 
-import RPi.GPIO as GPIO
+__version__ = '2.0.0'`
+
+DEBUG = True
+DEBUG_MENS = True
+DEBUG_WOMENS = False
 
 app = Flask(__name__)
 
-GPIO.setmode(GPIO.BCM)
+if not DEBUG:
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BCM)
 
 
 @app.route('/')
 def hello():
-    GPIO.setup(4, GPIO.IN)
-    womens_occupied = not (GPIO.input(4))
-    GPIO.setup(22, GPIO.IN)
-    mens_occupied = not (GPIO.input(22))
+    if not DEBUG:
+        GPIO.setup(4, GPIO.IN)
+        womens_occupied = not (GPIO.input(4))
+        GPIO.setup(22, GPIO.IN)
+        mens_occupied = not (GPIO.input(22))
+    else:
+        mens_occupied = DEBUG_MENS
+        womens_occupied = DEBUG_WOMENS
 
     if mens_occupied:
         if womens_occupied:
@@ -38,11 +48,18 @@ def hello():
 @app.route('/status')
 def get_status():
     dic = {}
-    GPIO.setup(4, GPIO.IN)
-    GPIO.setup(22, GPIO.IN)
-    dic['womens_occupied'] = not (GPIO.input(4))
-    dic['mens_occupied'] = not (GPIO.input(22))
+    if not DEBUG:
+        GPIO.setup(4, GPIO.IN)
+        GPIO.setup(22, GPIO.IN)
+        dic['womens_occupied'] = not (GPIO.input(4))
+        dic['mens_occupied'] = not (GPIO.input(22))
+    else:
+        dic['womens_occupied'] = DEBUG_WOMENS
+        dic['mens_occupied'] = DEBUG_MENS
     return jsonify(**dic)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+    port = 80
+    if DEBUG:
+        port = 8001
+    app.run(host='0.0.0.0', port=port, debug=True)
