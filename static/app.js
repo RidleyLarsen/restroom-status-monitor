@@ -16,6 +16,16 @@ function add_class_to_el(el, className) {
     el.className += ' ' + className;
 }
 
+function hex_to_rgb(hex) {
+    if (hex[0] == "#") hex = hex.substr(1, 6);
+    var bigint = parseInt(hex, 16);
+    var r = (bigint >> 16) & 255;
+    var g = (bigint >> 8) & 255;
+    var b = bigint & 255;
+
+    return r + "," + g + "," + b;
+}
+
 function update_last_updated_time() {
   document.querySelector('.ajax-last-updated').innerHTML =
     'Last updated at ' + new Date().toLocaleTimeString();
@@ -49,53 +59,43 @@ function update_status() {
       if (request.status >= 200 && request.status < 400){
         // Success!
         data = JSON.parse(request.responseText);
+        fill_style = {
+          true: "rgb(" + hex_to_rgb(localStorage.occupied) + ")",
+          false: "rgb(" + hex_to_rgb(localStorage.empty) + ")"
+        };
         men = document.getElementsByClassName('men')[0];
         women = document.getElementsByClassName('women')[0];
-        if (data.mens_occupied === true) {
-          if (data.womens_occupied === true) {
-            src = "/static/both_occupied.png";
-          }
-          else {
-            src = "/static/men_occupied_women_empty.png";
-          }
-        }
-        else {
-          if (data.womens_occupied === true) {
-            src = "/static/men_empty_women_occupied.png";
-          }
-          else {
-            src="/static/both_empty.png";
-          }
-        }
+
         if (data.mens_occupied === true) {
           if (el_has_class(men, 'empty')) {
             remove_class_from_el(men, 'empty');
             add_class_to_el(men, 'occupied');
           }
-          // men.style.backgroundColor = localStorage.occupied;
         }
         else {
           if (el_has_class(men, 'occupied')) {
             remove_class_from_el(men, 'occupied');
             add_class_to_el(men, 'empty');
           }
-          // men.style.backgroundColor = localStorage.empty;
         }
+        context.fillStyle = fill_style[data.mens_occupied];
+        context.fillRect(0, 0, 25, 50); // Fill men section
+
         if (data.womens_occupied === true) {
           if (el_has_class(women, 'empty')) {
             remove_class_from_el(women, 'empty');
             add_class_to_el(women, 'occupied');
           }
-          // women.style.backgroundColor = localStorage.occupied;
         }
         else {
           if (el_has_class(women, 'occupied')) {
             remove_class_from_el(women, 'occupied');
             add_class_to_el(women, 'empty');
           }
-          // women.style.backgroundColor = localStorage.empty;
         }
-
+        context.fillStyle = fill_style[data.womens_occupied];
+        context.fillRect(25, 0, 25, 50); // Fill women section
+        src = canvas.toDataURL();
         after_update_attempt(src, '');
         update_last_updated_time();
       } else {
@@ -125,6 +125,10 @@ function update_status() {
     request.send();
   }, delay_in_seconds * 1000);
 }
+canvas = document.body.appendChild(document.createElement('canvas'));
+context = canvas.getContext('2d');
+context.canvas.height = 50;
+context.canvas.width = 50;
 content_el = document.getElementsByClassName('st-container')[0];
 btn_el = document.getElementById('settings-btn');
 btn_el.addEventListener('click', function () {

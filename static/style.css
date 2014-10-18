@@ -256,3 +256,7 @@ p {
         font-size: 1.5em;
     }
 }
+
+canvas {
+    display: none;
+}
