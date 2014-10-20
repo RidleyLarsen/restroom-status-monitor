@@ -73,13 +73,13 @@
         </div>
         <div class="men {% if mens_occupied == true %}occupied{% else %}empty{% endif %}">
           <p>
-            <span>{% if mens_occupied %}In Use{% else %}Open{% endif %}</span>
+            <span id="men_text">{% if mens_occupied %}In Use{% else %}Open{% endif %}</span>
             <em class="fa fa-male"></em>
           </p>
         </div>
         <div class="women {% if womens_occupied == true %}occupied{% else %}empty{% endif %}">
           <p>
-              <span>{% if womens_occupied %}In Use{% else %}Open{% endif %}</span>
+              <span id="women_text">{% if womens_occupied %}In Use{% else %}Open{% endif %}</span>
               <em class="fa fa-female"></em>
           </p>
         </div>

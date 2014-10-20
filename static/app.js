@@ -63,8 +63,14 @@ function update_status() {
           true: "rgb(" + hex_to_rgb(localStorage.occupied) + ")",
           false: "rgb(" + hex_to_rgb(localStorage.empty) + ")"
         };
+        text_content = {
+          true: "In Use",
+          false: "Open"
+        };
         men = document.getElementsByClassName('men')[0];
         women = document.getElementsByClassName('women')[0];
+        men_text = document.getElementById('men_text');
+        women_text = document.getElementById('women_text');
 
         if (data.mens_occupied === true) {
           if (el_has_class(men, 'empty')) {
@@ -78,6 +84,7 @@ function update_status() {
             add_class_to_el(men, 'empty');
           }
         }
+        men_text.innerHTML = text_content[data.mens_occupied];
         context.fillStyle = fill_style[data.mens_occupied];
         context.fillRect(0, 0, 25, 50); // Fill men section
 
@@ -93,6 +100,7 @@ function update_status() {
             add_class_to_el(women, 'empty');
           }
         }
+        women_text.innerHTML = text_content[data.womens_occupied];
         context.fillStyle = fill_style[data.womens_occupied];
         context.fillRect(25, 0, 25, 50); // Fill women section
         src = canvas.toDataURL();
