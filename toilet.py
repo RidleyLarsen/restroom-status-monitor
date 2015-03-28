@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template, jsonify
 
-__version__ = '2.0.0'
+__version__ = '3.0'
 
 DEBUG = False
 DEBUG_MENS = True
