@@ -1,3 +1,5 @@
+import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template, jsonify
 
 __version__ = '2.0.0'
@@ -59,7 +61,10 @@ def get_status():
     return jsonify(**dic)
 
 if __name__ == '__main__':
-    port = 80
+    port = 8001
+    handler = RotatingFileHandler('/home/pi/app.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
     if DEBUG:
         port = 8001
     app.run(host='0.0.0.0', port=port, debug=True)
